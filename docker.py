@@ -12,7 +12,6 @@ class Compose2TaskDefinition():
         f = open(filename)
         data_map = yaml.safe_load(f)
         f.close()
-        print data_map
         defs = []
         for name in data_map:
             port_mappings = Ref("AWS::NoValue")
