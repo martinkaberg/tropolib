@@ -4,8 +4,7 @@ Additional classes for troposphere
 
 usage
 
-<code>
-
+```python
 from docker import Compose2TaskDefinition
 from troposphere import Template
 
@@ -17,5 +16,4 @@ image_map={
 }
 t.add_resource(Compose2TaskDefinition("../docker-compose.yml",image_map).get_task_definition("taskdef"))
 print t.to_json()
-
-</code>
+```
