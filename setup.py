@@ -12,4 +12,3 @@ setup(name='tropolib',
           'troposphere',
       ],
       zip_safe=False)
-
