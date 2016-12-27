@@ -101,7 +101,7 @@ class Network(ExportTemplate):
                     "{}{}".format(z.title, k.capitalize()),
                     Value=Ref(z.subnets[v]),
                     Export=Export(
-                        Sub("${AWS::StackName}-" + z.title +  k.capitalize())
+                        Sub("${AWS::StackName}-" + z.title + k.capitalize())
                     )
                 ))
             db_subnet_group = self.add_resource(
