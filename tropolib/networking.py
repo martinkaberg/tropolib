@@ -75,7 +75,7 @@ class Network(ExportTemplate):
                     "{}{}".format(z.title, k.capitalize()),
                     Value=Ref(z.subnets[v]),
                     Export=Export(
-                        Sub("${AWS::StackName}-" + z.title + str(v))
+                        Sub("${AWS::StackName}-" + z.title + k.capitalize())
                     )
                 ))
 
@@ -101,7 +101,7 @@ class Network(ExportTemplate):
                     "{}{}".format(z.title, k.capitalize()),
                     Value=Ref(z.subnets[v]),
                     Export=Export(
-                        Sub("${AWS::StackName}-" + z.title + str(v))
+                        Sub("${AWS::StackName}-" + z.title +  k.capitalize())
                     )
                 ))
             db_subnet_group = self.add_resource(
@@ -131,7 +131,7 @@ class Network(ExportTemplate):
                     "{}{}".format(z.title, k.capitalize()),
                     Value=Ref(z.subnets[v]),
                     Export=Export(
-                        Sub("${AWS::StackName}-" + str(self.zone_multiplier) + str(v))
+                        Sub("${AWS::StackName}-" + z.title + k.capitalize())
                     )
                 ))
         self.zone_multiplier += (1 * (azs + 1))
