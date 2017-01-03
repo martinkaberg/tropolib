@@ -13,6 +13,7 @@ class Compose2TaskDefinition():
         defs = []
         for name in data_map:
             port_mappings = Ref("AWS::NoValue")
+            volumes_from = Ref("AWS::NoValue")
             if data_map[name].get("ports") is not None:
                 port_mappings = []
                 for pm in data_map[name].get("ports"):
@@ -22,7 +23,14 @@ class Compose2TaskDefinition():
                             HostPort=pm.split(":")[0],
                         )
                     )
-
+            if data_map[name].get("volumes_from") is not None:
+                volumes_from = []
+                for vf in data_map[name].get("volumes_from"):
+                    volumes_from.append(
+                        ecs.VolumesFrom(
+                            SourceContainer=vf
+                        )
+                    )
             if data_map[name].get("links") is not None:
                 links = []
             self.container_definitions[name] = ecs.ContainerDefinition(
@@ -33,9 +41,11 @@ class Compose2TaskDefinition():
                 Memory=data_map[name]["mem_limit"][:-1],
                 Essential=True,
                 PortMappings=port_mappings,
-                Links=data_map[name].get("links", Ref("AWS::NoValue"))
-
+                Links=data_map[name].get("links", Ref("AWS::NoValue")),
+                VolumesFrom=volumes_from
             )
+
+
             defs.append(
                 self.container_definitions[name]
             )
