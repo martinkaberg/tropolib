@@ -6,8 +6,8 @@ class Compose2TaskDefinition():
     def __init__(self, compose_file, name_image_map):
         self.compose_file = compose_file
         self.container_definitions = {}
-        filename = os.path.join(os.path.dirname(__file__), self.compose_file)
-        f = open(filename)
+
+        f = open(self.compose_file)
         data_map = yaml.safe_load(f)
         f.close()
         defs = []
@@ -62,3 +62,4 @@ class Compose2TaskDefinition():
             title,
             ContainerDefinitions=defs
         )
+

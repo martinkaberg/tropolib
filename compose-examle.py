@@ -1,6 +1,6 @@
 from tropolib.docker import Compose2TaskDefinition
-from troposphere import (Template, Parameter, Ref, ecs)
-
+from troposphere import (Template, Parameter, Ref, ecs, elasticloadbalancing)
+import os
 t = Template()
 php_image = t.add_parameter(Parameter(
     "PhpImage",
@@ -37,8 +37,10 @@ image_map = {
     "web": Ref(web_image)
 }
 
+
+filename = os.path.join(os.path.dirname(__file__), "../docker-compose.yml")
 # Create the intermediary task definition from docker compose file, and pass the image map
-task = Compose2TaskDefinition("../docker-compose.yml", image_map)
+task = Compose2TaskDefinition(filename, image_map)
 # Modify a container definition  by getting it by name
 task.get_container_definition("php").Environment = [ecs.Environment(
     Name="DB_HOST",
