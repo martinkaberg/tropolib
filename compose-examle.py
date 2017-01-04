@@ -1,10 +1,3 @@
-# tropolib
-Additional classes for troposphere
-
-
-usage
-
-```python
 from tropolib.docker import Compose2TaskDefinition
 from troposphere import (Template, Parameter, Ref, ecs)
 
@@ -54,5 +47,3 @@ task.get_container_definition("php").Environment = [ecs.Environment(
 # Retrieves the troposphere.ecs.TaskDefinition object and sets its title ( LogicalId ) equal to the title parameter
 t.add_resource(task.get_task_definition(title="taskdef"))
 print t.to_json()
-
-```
