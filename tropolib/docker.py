@@ -11,7 +11,9 @@ class Compose2TaskDefinition():
         data_map = yaml.safe_load(f)
         f.close()
         defs = []
+
         for name in data_map:
+            environment = []
             port_mappings = Ref("AWS::NoValue")
             volumes_from = Ref("AWS::NoValue")
             if data_map[name].get("ports") is not None:
@@ -31,8 +33,12 @@ class Compose2TaskDefinition():
                             SourceContainer=vf
                         )
                     )
-            if data_map[name].get("links") is not None:
-                links = []
+            for env in data_map[name].get("environment", []):
+                environment.append(ecs.Environment(
+                    Name=env.split("=", 1)[0],
+                    Value=env.split("=", 1)[1]
+                ))
+
             self.container_definitions[name] = ecs.ContainerDefinition(
                 Name=name,
                 Image=name_image_map[name],
@@ -42,9 +48,9 @@ class Compose2TaskDefinition():
                 Essential=True,
                 PortMappings=port_mappings,
                 Links=data_map[name].get("links", Ref("AWS::NoValue")),
-                VolumesFrom=volumes_from
+                VolumesFrom=volumes_from,
+                Environment=environment
             )
-
 
             defs.append(
                 self.container_definitions[name]
@@ -63,3 +69,36 @@ class Compose2TaskDefinition():
             ContainerDefinitions=defs
         )
 
+    def environment(self, name):
+        return ContainerEnvironment(self.get_container_definition(name))
+
+
+class ContainerEnvironment(object):
+    def __init__(self, container):
+        self._items = {}
+        self.container = container
+
+    def __setitem__(self, key, value):
+        for e in self.container.Environment:
+            if e.Name == key:
+                e.Value = value
+                return
+        self.container.Environment.append(ecs.Environment(
+            Name=key,
+            Value=value
+        ))
+
+    def __getitem__(self, key):
+        for e in self.container.Environment:
+            if e.Name == key:
+                return e.Value
+        return None
+
+    def __len__(self):
+        return len(self.container.Environment)
+
+    def __iter__(self):
+        ret = {}
+        for e in self.container.Environment:
+            ret[e.Name] = e.Value
+        return iter(ret)
