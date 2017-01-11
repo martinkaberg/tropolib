@@ -41,13 +41,13 @@ image_map = {
 filename = os.path.join(os.path.dirname(__file__), "docker-compose.yml")
 # Create the intermediary task definition from docker compose file, and pass the image map
 task = Compose2TaskDefinition(filename, image_map)
-# Modify a container definition  by getting it by name
-task.environment("php7")["DB_HOST"]=Ref(db_host)
-task.environment("php7")["BLA"]=Ref(db_host)
 
-for a in task.environment("php7"):
-    print a
+
+# Set an environment variable
+task.environment("php7")["DB_HOST"]=Ref(db_host)
+
+
 
 # Retrieves the troposphere.ecs.TaskDefinition object and sets its title ( LogicalId ) equal to the title parameter
 t.add_resource(task.get_task_definition(title="taskdef"))
-#print t.to_json()
+print t.to_json()
