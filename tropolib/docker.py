@@ -2,7 +2,7 @@ from troposphere import (ecs, Ref)
 import yaml, os
 
 
-class Compose2TaskDefinition():
+class Compose2TaskDefinition(object):
     def __init__(self, compose_file, name_image_map):
         self.compose_file = compose_file
         self.container_definitions = {}
@@ -66,11 +66,72 @@ class Compose2TaskDefinition():
             defs.append(self.container_definitions[name])
         return ecs.TaskDefinition(
             title,
-            ContainerDefinitions=defs
+            ContainerDefinitions=defs,
+            Volumes=[]
         )
 
     def environment(self, name):
         return ContainerEnvironment(self.get_container_definition(name))
+
+
+class Compose2TaskDefinitionDataDog(Compose2TaskDefinition):
+    def __init__(self, compose_file, name_image_map, datadog_image, api_key):
+        super(Compose2TaskDefinitionDataDog, self).__init__(compose_file, name_image_map)
+        self.api_key = api_key
+        self.datadog_image = datadog_image
+        self.container_definitions["ddagent"] = ecs.ContainerDefinition(
+            Name="ddagent",
+            Image=datadog_image,
+            Cpu=10,
+            Memory=128,
+            Essential=True,
+            MountPoints=[
+                ecs.MountPoint(
+                    ContainerPath="/var/run/docker.sock",
+                    SourceVolume="docker_sock"
+                ),
+                ecs.MountPoint(
+                    ContainerPath="/host/sys/fs/cgroup",
+                    SourceVolume="cgroup",
+                    ReadOnly=True
+                ),
+                ecs.MountPoint(
+                    ContainerPath="/host/proc",
+                    SourceVolume="proc",
+                    ReadOnly=True
+                )
+            ],
+            Environment=[
+                ecs.Environment(
+                    Name="API_KEY",
+                    Value=self.api_key
+                )
+            ]
+        )
+
+    def get_task_definition(self, title):
+        val = super(Compose2TaskDefinitionDataDog, self).get_task_definition(title)
+        val.Volumes.extend([
+            ecs.Volume(
+                Host=ecs.Host(
+                    SourcePath="/var/run/docker.sock"
+                ),
+                Name="docker_sock"
+            ),
+            ecs.Volume(
+                Host=ecs.Host(
+                    SourcePath="/proc/"
+                ),
+                Name="proc"
+            ),
+            ecs.Volume(
+                Host=ecs.Host(
+                    SourcePath="/cgroup/"
+                ),
+                Name="cgroup"
+            ),
+        ])
+        return val
 
 
 class ContainerEnvironment(object):

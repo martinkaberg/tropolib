@@ -1,4 +1,4 @@
-from tropolib.docker import Compose2TaskDefinition
+from tropolib.docker import Compose2TaskDefinitionDataDog
 from troposphere import (Template, Parameter, Ref, ecs, elasticloadbalancing)
 import os
 t = Template()
@@ -40,7 +40,7 @@ image_map = {
 
 filename = os.path.join(os.path.dirname(__file__), "docker-compose.yml")
 # Create the intermediary task definition from docker compose file, and pass the image map
-task = Compose2TaskDefinition(filename, image_map)
+task = Compose2TaskDefinitionDataDog(filename, image_map,"datadog/docker-dd-agent:latest", "abc")
 
 
 # Set an environment variable
