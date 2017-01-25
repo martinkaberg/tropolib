@@ -54,7 +54,7 @@ class Compose2TaskDefinition(object):
                     LogDriver="awslogs",
                     Options={
                         "awslogs-region": Ref("AWS::Region"),
-                        "awslogs-group": name
+                        "awslogs-group": Ref("AWS::StackName")
                     }
 
                 )
