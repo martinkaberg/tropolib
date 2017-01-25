@@ -1,4 +1,4 @@
-from troposphere import (ecs, Ref)
+from troposphere import (ecs, Ref, Join)
 import yaml, os
 
 
@@ -54,7 +54,7 @@ class Compose2TaskDefinition(object):
                     LogDriver="awslogs",
                     Options={
                         "awslogs-region": Ref("AWS::Region"),
-                        "awslogs-group": Ref("AWS::StackName")
+                        "awslogs-group": Join("-",[Ref("AWS::StackName"),name])
                     }
 
                 )
@@ -119,7 +119,7 @@ class Compose2TaskDefinitionDataDog(Compose2TaskDefinition):
                 LogDriver="awslogs",
                 Options={
                     "awslogs-region": Ref("AWS::Region"),
-                    "awslogs-group": "ddagent"
+                    "awslogs-group": Join("-",[Ref("AWS::StackName"),"ddagent"])
                 }
             )
         )
