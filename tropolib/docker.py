@@ -49,7 +49,10 @@ class Compose2TaskDefinition(object):
                 PortMappings=port_mappings,
                 Links=data_map[name].get("links", Ref("AWS::NoValue")),
                 VolumesFrom=volumes_from,
-                Environment=environment
+                Environment=environment,
+                LogConfiguration=ecs.LogConfiguration(
+                    LogDriver="awslogs"
+                )
             )
 
             defs.append(
@@ -106,7 +109,10 @@ class Compose2TaskDefinitionDataDog(Compose2TaskDefinition):
                     Name="API_KEY",
                     Value=self.api_key
                 )
-            ]
+            ],
+            LogConfiguration=ecs.LogConfiguration(
+                LogDriver="awslogs"
+            )
         )
 
     def get_task_definition(self, title):
