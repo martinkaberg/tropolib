@@ -51,7 +51,12 @@ class Compose2TaskDefinition(object):
                 VolumesFrom=volumes_from,
                 Environment=environment,
                 LogConfiguration=ecs.LogConfiguration(
-                    LogDriver="awslogs"
+                    LogDriver="awslogs",
+                    Options={
+                        "awslogs-region": Ref("AWS::Region"),
+                        "awslogs-group": name
+                    }
+
                 )
             )
 
@@ -111,7 +116,11 @@ class Compose2TaskDefinitionDataDog(Compose2TaskDefinition):
                 )
             ],
             LogConfiguration=ecs.LogConfiguration(
-                LogDriver="awslogs"
+                LogDriver="awslogs",
+                Options={
+                    "awslogs-region": Ref("AWS::Region"),
+                    "awslogs-group": "ddagent"
+                }
             )
         )
 
