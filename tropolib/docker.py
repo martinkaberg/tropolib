@@ -54,7 +54,8 @@ class Compose2TaskDefinition(object):
                     LogDriver="awslogs",
                     Options={
                         "awslogs-region": Ref("AWS::Region"),
-                        "awslogs-group": Join("-",[Ref("AWS::StackName"),name])
+                        "awslogs-group": Ref("AWS::StackName"),
+                        "awslogs-stream-prefix": name
                     }
 
                 )
@@ -119,7 +120,8 @@ class Compose2TaskDefinitionDataDog(Compose2TaskDefinition):
                 LogDriver="awslogs",
                 Options={
                     "awslogs-region": Ref("AWS::Region"),
-                    "awslogs-group": Join("-",[Ref("AWS::StackName"),"ddagent"])
+                    "awslogs-group": Ref("AWS::StackName"),
+                    "awslogs-stream-prefix": "ddagent"
                 }
             )
         )
