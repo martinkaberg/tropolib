@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='tropolib',
-      version='0.1',
+      version='0.1.1',
       description='Troposphere library',
       url='http://github.com/martinkaberg/tropolib',
       author='Martin Kaberg',
