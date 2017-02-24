@@ -1,13 +1,24 @@
 from troposphere import (
-    Ref, Join, Base64
+    Ref, Join, Base64, awslambda
 )
-from troposphere.cloudformation import (
-    Metadata, Init, InitConfigSets, InitConfig
-)
+
+
+def lambda_from_file(python_file):
+    """
+    Reads a python file and returns a awslambda.Code object
+    :param python_file:
+    :return:
+    """
+    lambda_function = []
+    with open(python_file, 'r') as f:
+        lambda_function.extend(f.read().splitlines())
+
+    return awslambda.Code(ZipFile=(Join('\n', lambda_function)))
 
 
 def userdata_file_path(name):
     return name + '.sh'
+
 
 def userdata_from_file(userdata_file, parameters=None, references=None,
                        constants=None):
@@ -57,8 +68,6 @@ def userdata_from_file(userdata_file, parameters=None, references=None,
     return Base64(Join('', userdata))
 
 
-
-
 class UserData(object):
     def __init__(self):
         self.shell_scripts = []
@@ -95,14 +104,14 @@ class UserData(object):
             self.shell_scripts.append(userdata)
         elif type == "upstart":
             self.upstart_jobs.append(userdata)
-        else :
+        else:
             raise NameError("Type: must be either shell or upstart")
 
     def get_user_data(self):
         ret = []
-        boundary="==BOUNDARY=="
+        boundary = "==BOUNDARY=="
         ret.append('Content-Type: multipart/mixed; boundary="{}"\n'.format(boundary))
-        boundary+='\n'
+        boundary += '\n'
         ret.append('MIME-Version: 1.0\n')
 
         for u in self.upstart_jobs:
@@ -118,5 +127,3 @@ class UserData(object):
             ret.extend(sh)
 
         return Base64(Join('', ret))
-
-
